@@ -1,12 +1,15 @@
 import os
 from flask import Flask, render_template, request, redirect
 from supabase import create_client
+from dotenv import load_dotenv
+
+load_dotenv() # .env 파일의 내용을 읽어옴.
 
 app = Flask(__name__)
 
 # 1. 접속 정보
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://nuzyippznvhwbfzftfhd.supabase.co")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51enlpcHB6bnZod2JmemZ0ZmhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0Mzc5MDksImV4cCI6MjA5ND:WAxMzkwOX0.icNRPSCOLswwUj9GlQNZovSukNI-iMtFa1ZbbrFk4jE")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51enlpcHB6bnZod2JmemZ0ZmhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0Mzc5MDksImV4cCI6MjA5NDAxMzkwOX0.icNRPSCOLswwUj9GlQNZovSukNI-iMtFa1ZbbrFk4jE")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 @app.route('/')
@@ -61,7 +64,7 @@ def login_page():
 
 # --- [로직: 비밀번호 확인 및 조회] ---
 @app.route('/view-bill', methods=['POST'])
-def view_bill():
+def submit_view_bill():
     biz_last = request.form['biz_last']  # 사용자가 입력한 5자리
     mmyy = request.form['mmyy']
     
@@ -104,4 +107,4 @@ def view_bill():
 if __name__ == '__main__':
     # Render는 PORT 환경변수를 사용합니다.
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=True)
