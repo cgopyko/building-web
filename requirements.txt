@@ -1,4 +1,6 @@
 ﻿flask
+pandas
+openpyxl
 supabase
 python-dotenv  # <-- 방금 추가한 것
 waitress       # 윈도우 로컬 실행용 (선택)

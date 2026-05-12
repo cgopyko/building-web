@@ -1,0 +1,28 @@
+<h2>데이터 관리 센터</h2>
+
+<div class="tabs">
+    <button onclick="showTab('companies')">입주 업체</button>
+    <button onclick="showTab('elec')">당월 전기료</button>
+</div>
+
+<div id="upload-section">
+    <h3>엑셀로 일괄 등록하기</h3>
+    <form action="/upload/companies" method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <button type="submit">업로드</button>
+    </form>
+</div>
+
+<div id="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>업체명</th>
+                <th>전기 사용량</th>
+                <th>수정</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+</div>

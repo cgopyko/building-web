@@ -1,13 +1,13 @@
 import os
+import pandas as pd
 from flask import Flask, render_template, request, redirect
 from supabase import create_client
 from dotenv import load_dotenv
 
 load_dotenv() # .env 파일의 내용을 읽어옴.
 
-app = Flask(__name__)
-
 # 1. 접속 정보
+app = Flask(__name__)
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://nuzyippznvhwbfzftfhd.supabase.co")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51enlpcHB6bnZod2JmemZ0ZmhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0Mzc5MDksImV4cCI6MjA5NDAxMzkwOX0.icNRPSCOLswwUj9GlQNZovSukNI-iMtFa1ZbbrFk4jE")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -104,6 +104,35 @@ def submit_view_bill():
     except Exception as e:
         return f"조회 중 오류 발생: {e}"
 
+@app.route('/upload/<table_name>', methods=['POST'])
+def upload_file(table_name):
+    if 'file' not in request.files:
+        return "파일이 없습니다.", 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return "선택된 파일이 없습니다.", 400
+
+    try:
+        # 1. 파일 읽기 (CSV 또는 Excel)
+        if file.filename.endswith('.csv'):
+            df = pd.read_csv(file, skiprows=1) # 첫 번째 행은 무시
+        else:
+            df = pd.read_excel(file, skiprows=1)
+
+        df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x) # 앞뒤 공백 제거
+
+        # 2. 데이터 정제 (NaN 처리 등)
+        df = df.where(pd.notnull(df), None) # 결측치(NaN) None으로 변환
+        data = df.to_dict(orient='records')
+
+        # 3. Supabase에 업로드
+        response = supabase.table(table_name).insert(data).execute()
+        
+        return f"{table_name} 테이블에 데이터 업로드 완료!"
+    except Exception as e:
+        return f"오류 발생: {str(e)}", 500
+    
 if __name__ == '__main__':
     # Render는 PORT 환경변수를 사용합니다.
     port = int(os.environ.get('PORT', 5000))
