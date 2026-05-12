@@ -36,9 +36,9 @@ def upload_file(table_name):
     try:
         # 1. 2행부터 읽기 (skiprows=1)
         if file.filename.endswith('.csv'):
-            df = pd.read_csv(file, sep=r'\s*,\s*', skiprows=1, engine='python')
+            df = pd.read_csv(file, sep=r'\s*,\s*', engine='python')
         else:
-            df = pd.read_excel(file, sep=r'\s*,\s*', skiprows=1, engine='python')
+            df = pd.read_excel(file, sep=r'\s*,\s*', engine='python')
 
         # 2. 앞뒤 공백 제거 (Trim) 및 결측치 처리
         df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
